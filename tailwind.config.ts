@@ -52,6 +52,23 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// EDCI Status Colors
+				'status-normal': {
+					DEFAULT: 'hsl(var(--status-normal))',
+					foreground: 'hsl(var(--status-normal-foreground))'
+				},
+				'status-warning': {
+					DEFAULT: 'hsl(var(--status-warning))',
+					foreground: 'hsl(var(--status-warning-foreground))'
+				},
+				'status-critical': {
+					DEFAULT: 'hsl(var(--status-critical))',
+					foreground: 'hsl(var(--status-critical-foreground))'
+				},
+				// Medical Dashboard Colors
+				'medical-primary': 'hsl(var(--medical-primary))',
+				'medical-secondary': 'hsl(var(--medical-secondary))',
+				'medical-accent': 'hsl(var(--medical-accent))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
