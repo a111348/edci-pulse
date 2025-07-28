@@ -17,6 +17,12 @@ export interface NotificationSettings {
   normalThreshold: number;
   warningThreshold: number;
   criticalThreshold: number;
+  // 三竹資訊簡訊設定
+  mitake: {
+    username: string;
+    password: string;
+    apiUrl: string;
+  };
 }
 
 export interface APISettings {

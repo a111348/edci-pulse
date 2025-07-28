@@ -88,10 +88,15 @@ export const defaultSettings: SettingsState = {
     normalThreshold: 15.0,
     warningThreshold: 25.0,
     criticalThreshold: 30.0,
+    mitake: {
+      username: '',
+      password: '',
+      apiUrl: 'https://smsapi.mitake.com.tw/api/mtk/SmSend',
+    },
   },
   api: {
     baseUrl: 'http://172.16.99.244:5000',
-    endpoint: '/api/OverallDashboard/GetEDCIDashBoard?StartDate=2025-07-21',
+    endpoint: '/api/OverallDashboard/GetEDCIDashBoard',
     apiKey: '',
     timeout: 30,
     retryCount: 3,

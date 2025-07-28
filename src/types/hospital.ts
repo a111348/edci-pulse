@@ -22,6 +22,10 @@ export interface EDCICalculation {
   effectiveDoctors: number;
   edci: number;
   status: 'normal' | 'warning' | 'critical';
+  // EDCI v2 新增欄位
+  adjustedPBR?: number;
+  nbr?: number;
+  nurseWeightedPatients?: number;
 }
 
 export interface EDCIConfig {

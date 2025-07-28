@@ -25,7 +25,10 @@ export function useApiData() {
 
   // 從API獲取資料
   const fetchFromApi = async (apiSettings: APISettings): Promise<HospitalData[]> => {
-    const url = `${apiSettings.baseUrl}${apiSettings.endpoint}`;
+    // 自動生成今天的日期參數
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD格式
+    const urlWithDate = `${apiSettings.baseUrl}${apiSettings.endpoint}${apiSettings.endpoint.includes('?') ? '&' : '?'}StartDate=${today}`;
+    const url = urlWithDate;
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     };
