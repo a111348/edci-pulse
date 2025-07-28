@@ -6,6 +6,7 @@ import { HospitalCard } from '@/components/HospitalCard';
 import { HospitalMap } from '@/components/HospitalMap';
 import { TrendChart } from '@/components/TrendChart';
 import { DataExport } from '@/components/DataExport';
+import { SettingsDialog } from '@/components/SettingsDialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -83,10 +84,7 @@ const Index = () => {
                 通知
               </Button>
               
-              <Button variant="outline" size="sm">
-                <Settings className="w-4 h-4 mr-1" />
-                設定
-              </Button>
+              <SettingsDialog />
             </div>
           </div>
         </div>
