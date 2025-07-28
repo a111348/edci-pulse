@@ -114,8 +114,8 @@ export function useApiData() {
 
     const apiSettings = getApiSettings();
     
-    // 如果沒有設定API URL或API Key，使用模擬資料
-    if (!apiSettings.baseUrl || !apiSettings.apiKey) {
+    // 如果沒有設定API URL，使用模擬資料
+    if (!apiSettings.baseUrl || !apiSettings.endpoint) {
       console.log('Using mock data - API not configured');
       setHospitals(generateMockHospitalData());
       setLoading(false);

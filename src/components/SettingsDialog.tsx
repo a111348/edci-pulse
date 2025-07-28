@@ -16,7 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Settings, Save, RotateCcw, Plus, Trash2, Edit2 } from 'lucide-react';
+import { Settings, Save, RotateCcw, Plus, Trash2, Edit2, TestTube, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface SettingsDialogProps {
@@ -27,6 +27,8 @@ export function SettingsDialog({ trigger }: SettingsDialogProps) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<SettingsState>(defaultSettings);
   const [hasChanges, setHasChanges] = useState(false);
+  const [apiTesting, setApiTesting] = useState(false);
+  const [apiTestResult, setApiTestResult] = useState<{ success: boolean; message: string; data?: any } | null>(null);
   const { toast } = useToast();
 
   // 載入設定
@@ -100,6 +102,88 @@ export function SettingsDialog({ trigger }: SettingsDialogProps) {
       api: { ...prev.api, ...updates }
     }));
     setHasChanges(true);
+  };
+
+  // API測試功能
+  const testApiConnection = async () => {
+    setApiTesting(true);
+    setApiTestResult(null);
+
+    const { baseUrl, endpoint, apiKey, timeout } = settings.api;
+
+    // 檢查必要參數
+    if (!baseUrl || !endpoint) {
+      setApiTestResult({
+        success: false,
+        message: '請先填寫API基礎URL和端點',
+      });
+      setApiTesting(false);
+      return;
+    }
+
+    try {
+      const url = `${baseUrl}${endpoint}`;
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+
+      if (apiKey) {
+        headers['Authorization'] = `Bearer ${apiKey}`;
+      }
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout * 1000);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      // 檢查返回的資料格式
+      if (data.bodyDetails && Array.isArray(data.bodyDetails)) {
+        setApiTestResult({
+          success: true,
+          message: `連線成功！獲取到 ${data.bodyDetails.length} 筆醫院資料`,
+          data: data,
+        });
+      } else if (Array.isArray(data)) {
+        setApiTestResult({
+          success: true,
+          message: `連線成功！獲取到 ${data.length} 筆資料`,
+          data: data,
+        });
+      } else {
+        setApiTestResult({
+          success: false,
+          message: 'API返回的資料格式不正確',
+          data: data,
+        });
+      }
+    } catch (error: any) {
+      let errorMessage = 'API連線失敗';
+      
+      if (error.name === 'AbortError') {
+        errorMessage = `連線逾時 (超過 ${timeout} 秒)`;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      setApiTestResult({
+        success: false,
+        message: errorMessage,
+      });
+    }
+
+    setApiTesting(false);
   };
 
   // 數值輸入組件
@@ -431,7 +515,7 @@ export function SettingsDialog({ trigger }: SettingsDialogProps) {
                     <Input
                       value={settings.api.baseUrl}
                       onChange={(e) => updateAPISettings({ baseUrl: e.target.value })}
-                      placeholder="http://172.16.99.244"
+                      placeholder="http://172.16.99.244:5000"
                     />
                   </div>
                   <div className="space-y-2">
@@ -439,7 +523,7 @@ export function SettingsDialog({ trigger }: SettingsDialogProps) {
                     <Input
                       value={settings.api.endpoint}
                       onChange={(e) => updateAPISettings({ endpoint: e.target.value })}
-                      placeholder="/api/EdciApi/EDCIData"
+                      placeholder="/api/OverallDashboard/GetEDCIDashBoard?StartDate=2025-07-21"
                     />
                   </div>
                 </div>
@@ -482,6 +566,96 @@ export function SettingsDialog({ trigger }: SettingsDialogProps) {
                     step={1}
                     precision={0}
                   />
+                </div>
+
+                {/* API測試區域 */}
+                <div className="space-y-4 border-t pt-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base font-medium">API 連線測試</Label>
+                      <p className="text-sm text-muted-foreground">測試當前API設定是否能正常連線</p>
+                    </div>
+                    <Button
+                      onClick={testApiConnection}
+                      disabled={apiTesting}
+                      variant="outline"
+                      className="shrink-0"
+                    >
+                      {apiTesting ? (
+                        <>
+                          <div className="w-4 h-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                          測試中...
+                        </>
+                      ) : (
+                        <>
+                          <TestTube className="w-4 h-4 mr-2" />
+                          測試連線
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* 測試結果顯示 */}
+                  {apiTestResult && (
+                    <div className={`p-4 rounded-lg border ${
+                      apiTestResult.success 
+                        ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950' 
+                        : 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950'
+                    }`}>
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 mt-0.5">
+                          {apiTestResult.success ? (
+                            <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                          ) : (
+                            <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                          )}
+                        </div>
+                        <div className="flex-1 space-y-2">
+                          <p className={`font-medium ${
+                            apiTestResult.success 
+                              ? 'text-green-800 dark:text-green-100' 
+                              : 'text-red-800 dark:text-red-100'
+                          }`}>
+                            {apiTestResult.success ? '連線成功' : '連線失敗'}
+                          </p>
+                          <p className={`text-sm ${
+                            apiTestResult.success 
+                              ? 'text-green-700 dark:text-green-200' 
+                              : 'text-red-700 dark:text-red-200'
+                          }`}>
+                            {apiTestResult.message}
+                          </p>
+                          
+                          {/* 顯示API返回的簡要資料 */}
+                          {apiTestResult.success && apiTestResult.data?.bodyDetails && (
+                            <details className="mt-3">
+                              <summary className={`cursor-pointer text-sm font-medium ${
+                                apiTestResult.success 
+                                  ? 'text-green-700 dark:text-green-200' 
+                                  : 'text-red-700 dark:text-red-200'
+                              }`}>
+                                查看返回資料概要
+                              </summary>
+                              <div className="mt-2 p-3 bg-white dark:bg-gray-900 rounded border text-xs">
+                                <p><strong>總計:</strong> {apiTestResult.data.bodyDetails.length} 筆醫院資料</p>
+                                <p><strong>範例醫院:</strong></p>
+                                <ul className="mt-1 ml-4 space-y-1">
+                                  {apiTestResult.data.bodyDetails.slice(0, 3).map((hospital: any, index: number) => (
+                                    <li key={index}>
+                                      {hospital.hospitalNickName} (EDCI: {hospital.edci})
+                                    </li>
+                                  ))}
+                                  {apiTestResult.data.bodyDetails.length > 3 && (
+                                    <li>... 以及其他 {apiTestResult.data.bodyDetails.length - 3} 筆資料</li>
+                                  )}
+                                </ul>
+                              </div>
+                            </details>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

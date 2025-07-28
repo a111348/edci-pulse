@@ -90,8 +90,8 @@ export const defaultSettings: SettingsState = {
     criticalThreshold: 30.0,
   },
   api: {
-    baseUrl: 'http://172.16.99.244',
-    endpoint: '/api/EdciApi/EDCIData',
+    baseUrl: 'http://172.16.99.244:5000',
+    endpoint: '/api/OverallDashboard/GetEDCIDashBoard?StartDate=2025-07-21',
     apiKey: '',
     timeout: 30,
     retryCount: 3,
