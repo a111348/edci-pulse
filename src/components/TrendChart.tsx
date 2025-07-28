@@ -6,9 +6,13 @@ import { TrendingUp } from 'lucide-react';
 interface TrendChartProps {
   hospitalCode: string;
   hospitalName: string;
+  dateRange?: {
+    from: Date;
+    to: Date;
+  };
 }
 
-export function TrendChart({ hospitalCode, hospitalName }: TrendChartProps) {
+export function TrendChart({ hospitalCode, hospitalName, dateRange }: TrendChartProps) {
   const trendData = generateTrendData(hospitalCode);
   
   // 轉換資料格式供圖表使用
@@ -23,9 +27,16 @@ export function TrendChart({ hospitalCode, hospitalName }: TrendChartProps) {
 
   return (
     <Card className="p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <TrendingUp className="w-5 h-5 text-primary" />
-        <h3 className="text-lg font-semibold">{hospitalName} - 24小時EDCI趨勢</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-primary" />
+          <h3 className="text-lg font-semibold">{hospitalName} - EDCI趨勢</h3>
+        </div>
+        {dateRange && (
+          <div className="text-sm text-muted-foreground">
+            {dateRange.from.toLocaleDateString('zh-TW')} - {dateRange.to.toLocaleDateString('zh-TW')}
+          </div>
+        )}
       </div>
       
       <div className="h-80">

@@ -1,47 +1,54 @@
 import { useState, useEffect } from 'react';
 import { HospitalData } from '@/types/hospital';
-import { generateMockHospitalData } from '@/data/mockData';
 import { StatusOverview } from '@/components/StatusOverview';
 import { HospitalCard } from '@/components/HospitalCard';
 import { HospitalMap } from '@/components/HospitalMap';
-import { TrendChart } from '@/components/TrendChart';
+import { TrendsView } from '@/components/TrendsView';
 import { DataExport } from '@/components/DataExport';
 import { SettingsDialog } from '@/components/SettingsDialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Settings, Bell, Activity } from 'lucide-react';
+import { RefreshCw, Settings, Bell, Activity, Wifi, WifiOff } from 'lucide-react';
+import { useApiData } from '@/hooks/useApiData';
+import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
-  const [hospitals, setHospitals] = useState<HospitalData[]>([]);
   const [selectedHospital, setSelectedHospital] = useState<HospitalData | undefined>();
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  const [isLoading, setIsLoading] = useState(false);
+  const { hospitals, loading, error, fetchHospitalData, refetch } = useApiData();
+  const { toast } = useToast();
 
-  // 載入模擬資料
+  // 初始載入資料
   useEffect(() => {
-    setHospitals(generateMockHospitalData());
+    fetchHospitalData();
   }, []);
 
-  // 模擬自動更新（每5分鐘）
+  // 自動更新（每5分鐘）
   useEffect(() => {
     const interval = setInterval(() => {
-      setHospitals(generateMockHospitalData());
+      fetchHospitalData();
       setLastUpdated(new Date());
     }, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const handleRefresh = async () => {
-    setIsLoading(true);
-    // 模擬API請求延遲
-    setTimeout(() => {
-      setHospitals(generateMockHospitalData());
-      setLastUpdated(new Date());
-      setIsLoading(false);
-    }, 1000);
+  // 顯示錯誤訊息
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: '資料載入警告',
+        description: error,
+        variant: 'destructive',
+      });
+    }
+  }, [error, toast]);
+
+  const handleRefresh = () => {
+    refetch();
+    setLastUpdated(new Date());
   };
 
   return (
@@ -65,17 +72,24 @@ const Index = () => {
             </div>
             
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="text-xs">
-                最後更新：{lastUpdated.toLocaleTimeString('zh-TW')}
-              </Badge>
+              <div className="flex items-center gap-2">
+                {error ? (
+                  <WifiOff className="w-4 h-4 text-destructive" />
+                ) : (
+                  <Wifi className="w-4 h-4 text-status-normal" />
+                )}
+                <Badge variant="outline" className="text-xs">
+                  最後更新：{lastUpdated.toLocaleTimeString('zh-TW')}
+                </Badge>
+              </div>
               
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={handleRefresh}
-                disabled={isLoading}
+                disabled={loading}
               >
-                <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
                 更新
               </Button>
               
@@ -178,31 +192,11 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="trends" className="space-y-6">
-            {selectedHospital ? (
-              <TrendChart 
-                hospitalCode={selectedHospital.hospitalCode} 
-                hospitalName={selectedHospital.hospitalName}
-              />
-            ) : (
-              <Card className="p-8 text-center">
-                <p className="text-muted-foreground">請先選擇醫院以查看趨勢圖表</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-                  {hospitals.slice(0, 6).map((hospital) => (
-                    <Button
-                      key={hospital.id}
-                      variant="outline"
-                      onClick={() => setSelectedHospital(hospital)}
-                      className="h-auto p-4 flex flex-col items-start"
-                    >
-                      <span className="font-semibold">{hospital.hospitalName}</span>
-                      <span className="text-xs text-muted-foreground">
-                        EDCI: {hospital.edci}
-                      </span>
-                    </Button>
-                  ))}
-                </div>
-              </Card>
-            )}
+            <TrendsView 
+              hospitals={hospitals}
+              selectedHospital={selectedHospital}
+              onHospitalSelect={setSelectedHospital}
+            />
           </TabsContent>
 
           <TabsContent value="export" className="space-y-6">
