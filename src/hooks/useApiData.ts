@@ -53,6 +53,30 @@ export function useApiData() {
       const data = await response.json();
       
       // 將API回應轉換為系統格式
+      // 處理新的API格式：包含headData和bodyDetails
+      if (data.bodyDetails && Array.isArray(data.bodyDetails)) {
+        return data.bodyDetails.map((item: any) => ({
+          id: Math.random(),
+          hospitalCode: item.hospitaL_CODE || '',
+          hospitalName: item.hospitalNickName || '',
+          reportDatetime: new Date().toISOString(),
+          patientTn: item.patientS_TN || 0,
+          patientLvl1: item.patienT_LVL1 || 0,
+          patientLvl2: item.patienT_LVL2 || 0,
+          patientLvl3: item.patienT_LVL3 || 0,
+          patientLvl4: item.patienT_LVL4 || 0,
+          patientLvl5: item.patienT_LVL5 || 0,
+          attphysicianNum: item.attphysiciaN_NUM || 0,
+          resiphysicianNum: item.resiphysiciaN_NUM || 0,
+          edci: item.edci || 0,
+          edciStatus: item.edciStatus?.toLowerCase() === 'normal' ? 'normal' : 
+                     item.edciStatus?.toLowerCase() === 'warning' ? 'warning' : 'critical',
+          latitude: 0, // API沒有提供座標，使用預設值
+          longitude: 0,
+        }));
+      }
+
+      // 兼容舊格式（如果是陣列）
       if (Array.isArray(data)) {
         return data.map((item: any) => ({
           id: item.id || Math.random(),
