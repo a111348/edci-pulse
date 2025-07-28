@@ -122,7 +122,10 @@ export function SettingsDialog({ trigger }: SettingsDialogProps) {
     }
 
     try {
-      const url = `${baseUrl}${endpoint}`;
+      // 自動生成今天的日期參數
+      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD格式
+      const urlWithDate = `${baseUrl}${endpoint}${endpoint.includes('?') ? '&' : '?'}StartDate=${today}`;
+      const url = urlWithDate;
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       };
@@ -264,44 +267,132 @@ export function SettingsDialog({ trigger }: SettingsDialogProps) {
           <TabsContent value="edci" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>權重設定</CardTitle>
-                <CardDescription>調整各級病人的權重係數</CardDescription>
+                <CardTitle>醫師權重設定</CardTitle>
+                <CardDescription>調整各級病人的醫師權重係數</CardDescription>
               </CardHeader>
               <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <NumberInput
-                  label="L1 權重"
+                  label="L1 醫師權重"
                   value={settings.edci.level1Weight}
                   onChange={(value) => updateEDCISettings({ level1Weight: value })}
                   min={settings.weightLimits.level1.min}
                   max={settings.weightLimits.level1.max}
                 />
                 <NumberInput
-                  label="L2 權重"
+                  label="L2 醫師權重"
                   value={settings.edci.level2Weight}
                   onChange={(value) => updateEDCISettings({ level2Weight: value })}
                   min={settings.weightLimits.level2.min}
                   max={settings.weightLimits.level2.max}
                 />
                 <NumberInput
-                  label="L3 權重"
+                  label="L3 醫師權重"
                   value={settings.edci.level3Weight}
                   onChange={(value) => updateEDCISettings({ level3Weight: value })}
                   min={settings.weightLimits.level3.min}
                   max={settings.weightLimits.level3.max}
                 />
                 <NumberInput
-                  label="L4 權重"
+                  label="L4 醫師權重"
                   value={settings.edci.level4Weight}
                   onChange={(value) => updateEDCISettings({ level4Weight: value })}
                   min={settings.weightLimits.level4.min}
                   max={settings.weightLimits.level4.max}
                 />
                 <NumberInput
-                  label="L5 權重"
+                  label="L5 醫師權重"
                   value={settings.edci.level5Weight}
                   onChange={(value) => updateEDCISettings({ level5Weight: value })}
                   min={settings.weightLimits.level5.min}
                   max={settings.weightLimits.level5.max}
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>護理權重設定</CardTitle>
+                <CardDescription>調整各級病人的護理權重係數</CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <NumberInput
+                  label="L1 護理權重"
+                  value={1.5}
+                  onChange={() => {}} // 暫時固定值
+                  min={0.1}
+                  max={3.0}
+                />
+                <NumberInput
+                  label="L2 護理權重"
+                  value={1.0}
+                  onChange={() => {}} // 暫時固定值
+                  min={0.1}
+                  max={3.0}
+                />
+                <NumberInput
+                  label="L3 護理權重"
+                  value={1.0}
+                  onChange={() => {}} // 暫時固定值
+                  min={0.1}
+                  max={3.0}
+                />
+                <NumberInput
+                  label="L4 護理權重"
+                  value={0.5}
+                  onChange={() => {}} // 暫時固定值
+                  min={0.1}
+                  max={2.0}
+                />
+                <NumberInput
+                  label="L5 護理權重"
+                  value={0.3}
+                  onChange={() => {}} // 暫時固定值
+                  min={0.1}
+                  max={1.0}
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>FTE與權重係數</CardTitle>
+                <CardDescription>設定FTE計算和EDCI最終權重</CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <NumberInput
+                  label="住院醫師 FTE 係數"
+                  value={0.6}
+                  onChange={() => {}} // 暫時固定值
+                  min={0.1}
+                  max={1.0}
+                />
+                <NumberInput
+                  label="Adjusted PBR 權重"
+                  value={0.3}
+                  onChange={() => {}} // 暫時固定值
+                  min={0.0}
+                  max={1.0}
+                />
+                <NumberInput
+                  label="NBR 權重"
+                  value={0.3}
+                  onChange={() => {}} // 暫時固定值
+                  min={0.0}
+                  max={1.0}
+                />
+                <NumberInput
+                  label="等待住院權重"
+                  value={0.2}
+                  onChange={() => {}} // 暫時固定值
+                  min={0.0}
+                  max={1.0}
+                />
+                <NumberInput
+                  label="24h滯留權重"
+                  value={0.2}
+                  onChange={() => {}} // 暫時固定值
+                  min={0.0}
+                  max={1.0}
                 />
               </CardContent>
             </Card>
@@ -337,6 +428,18 @@ export function SettingsDialog({ trigger }: SettingsDialogProps) {
                 />
               </CardContent>
             </Card>
+
+            <div className="p-4 bg-muted rounded-lg">
+              <h4 className="font-medium mb-2">EDCI v2 計算說明</h4>
+              <div className="text-sm text-muted-foreground space-y-1">
+                <p>• 醫師加權病人數 = (L1×3) + (L2×2) + (L3×1) + (L4×0.5) + (L5×0.2)</p>
+                <p>• 有效醫師人力 FTE = 主治醫師數 + (住院醫師數×0.6)</p>
+                <p>• Adjusted PBR = 醫師加權病人數 / 有效醫師人力 FTE</p>
+                <p>• 護理加權病人數 = (L1×1.5) + (L2×1) + (L3×1) + (L4×0.5) + (L5×0.3)</p>
+                <p>• NBR = 護理加權病人數 / 護理師數</p>
+                <p>• EDCI v2 = (Adjusted PBR×0.3) + (NBR×0.3) + (等待住院×0.2) + (24h滯留×0.2)</p>
+              </div>
+            </div>
           </TabsContent>
 
           {/* 通知設定 */}
@@ -382,14 +485,52 @@ export function SettingsDialog({ trigger }: SettingsDialogProps) {
                 </div>
 
                 {settings.notifications.enableSMS && (
-                  <div className="space-y-2">
-                    <Label>手機號碼</Label>
-                    <Input
-                      type="tel"
-                      value={settings.notifications.phoneNumber}
-                      onChange={(e) => updateNotificationSettings({ phoneNumber: e.target.value })}
-                      placeholder="+886-912-345-678"
-                    />
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>手機號碼</Label>
+                      <Input
+                        type="tel"
+                        value={settings.notifications.phoneNumber}
+                        onChange={(e) => updateNotificationSettings({ phoneNumber: e.target.value })}
+                        placeholder="+886-912-345-678"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>三竹資訊帳號</Label>
+                      <Input
+                        type="text"
+                        value={settings.notifications.mitake?.username || ''}
+                        onChange={(e) => updateNotificationSettings({ 
+                          mitake: { ...settings.notifications.mitake, username: e.target.value }
+                        })}
+                        placeholder="輸入三竹帳號"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>三竹資訊密碼</Label>
+                      <Input
+                        type="password"
+                        value={settings.notifications.mitake?.password || ''}
+                        onChange={(e) => updateNotificationSettings({ 
+                          mitake: { ...settings.notifications.mitake, password: e.target.value }
+                        })}
+                        placeholder="輸入三竹密碼"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>API URL</Label>
+                      <Input
+                        type="url"
+                        value={settings.notifications.mitake?.apiUrl || ''}
+                        onChange={(e) => updateNotificationSettings({ 
+                          mitake: { ...settings.notifications.mitake, apiUrl: e.target.value }
+                        })}
+                        placeholder="https://smsapi.mitake.com.tw/api/mtk/SmSend"
+                      />
+                    </div>
                   </div>
                 )}
               </CardContent>
