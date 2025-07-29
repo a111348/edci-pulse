@@ -22,18 +22,21 @@ export const defaultPermissions: Permission[] = [
 export const defaultRoles: UserRole[] = [
   {
     id: 'viewer',
-    name: '檢視者',
-    permissions: defaultPermissions.filter(p => p.category === 'view'),
+    name: '觀看者',
+    description: '只能查看系統資料',
+    permissions: defaultPermissions.filter(p => p.category === 'view').map(p => p.id),
   },
   {
     id: 'operator',
     name: '操作員',
-    permissions: defaultPermissions.filter(p => p.category === 'view' || p.category === 'edit'),
+    description: '可以查看和編輯系統資料',
+    permissions: defaultPermissions.filter(p => ['view', 'edit'].includes(p.category)).map(p => p.id),
   },
   {
     id: 'admin',
-    name: '系統管理員',
-    permissions: defaultPermissions,
+    name: '管理員',
+    description: '擁有所有系統權限',
+    permissions: defaultPermissions.map(p => p.id),
   },
 ];
 
@@ -43,60 +46,85 @@ export const defaultUsers: User[] = [
     id: '1',
     username: 'admin',
     email: 'admin@hospital.gov.tw',
-    role: defaultRoles[2], // admin
+    role: 'admin',
     isActive: true,
-    lastLogin: new Date(),
-    createdAt: new Date('2024-01-01'),
+    lastLogin: new Date().toISOString(),
+    createdAt: new Date('2024-01-01').toISOString(),
   },
   {
     id: '2',
     username: 'operator1',
     email: 'operator1@hospital.gov.tw',
-    role: defaultRoles[1], // operator
+    role: 'operator',
     isActive: true,
-    lastLogin: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2小時前
-    createdAt: new Date('2024-01-15'),
+    lastLogin: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    createdAt: new Date('2024-01-15').toISOString(),
   },
   {
     id: '3',
     username: 'viewer1',
     email: 'viewer1@hospital.gov.tw',
-    role: defaultRoles[0], // viewer
+    role: 'viewer',
     isActive: true,
-    lastLogin: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1天前
-    createdAt: new Date('2024-02-01'),
+    lastLogin: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    createdAt: new Date('2024-02-01').toISOString(),
   },
 ];
 
 // 預設設定
 export const defaultSettings: SettingsState = {
-  edci: {
-    level1Weight: 3.0,
-    level2Weight: 2.0,
-    level3Weight: 1.0,
-    level4Weight: 0.5,
-    level5Weight: 0.2,
-    normalThreshold: 15.0,
-    warningThreshold: 25.0,
-    precision: 2,
-  },
-  notifications: {
-    enableEmail: true,
-    enableSMS: false,
-    emailAddress: 'alert@hospital.gov.tw',
-    phoneNumber: '+886-912-345-678',
-    normalThreshold: 15.0,
-    warningThreshold: 25.0,
-    criticalThreshold: 30.0,
-    mitake: {
-      username: '',
-      password: '',
-      apiUrl: 'https://smsapi.mitake.com.tw/api/mtk/SmSend',
+  edciCalculation: {
+    doctorWeights: {
+      l1: 3.0,
+      l2: 2.0,
+      l3: 1.0,
+      l4: 0.5,
+      l5: 0.2,
+    },
+    nurseWeights: {
+      l1: 1.5,
+      l2: 1.0,
+      l3: 1.0,
+      l4: 0.5,
+      l5: 0.3,
+    },
+    residentDoctorFactor: 0.6,
+    finalWeights: {
+      pbrWeight: 0.3,
+      nbrWeight: 0.3,
+      waitingAdmissionWeight: 0.2,
+      over24HourWeight: 0.2,
+    },
+    thresholds: {
+      normal: 15.0,
+      warning: 25.0,
     },
   },
+  notifications: {
+    email: {
+      enabled: false,
+      smtpServer: 'smtp.gmail.com',
+      port: 587,
+      username: '',
+      password: '',
+      recipients: [],
+    },
+    sms: {
+      enabled: false,
+      mitakeUsername: '',
+      mitakePassword: '',
+      mitakeApiUrl: 'https://smexpress.mitake.com.tw:9600/SmSendGet.asp',
+      recipients: [],
+    },
+    thresholds: {
+      warning: 15.0,
+      critical: 25.0,
+    },
+    notificationInterval: 30,
+  },
   api: {
-    baseUrl: 'http://172.16.99.244:5000',
-    endpoint: '/api/OverallDashboard/GetEDCIDashBoard',
+    baseUrl: 'http://192.168.1.100:8080',
+    endpoint: '/api/hospital/emergency-data',
     apiKey: '',
     timeout: 30,
     retryCount: 3,

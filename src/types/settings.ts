@@ -1,28 +1,52 @@
-export interface EDCISettings {
-  level1Weight: number;
-  level2Weight: number;
-  level3Weight: number;
-  level4Weight: number;
-  level5Weight: number;
-  normalThreshold: number;
-  warningThreshold: number;
-  precision: number; // 小數點位數
+export interface EDCICalculationSettings {
+  doctorWeights: {
+    l1: number;
+    l2: number;
+    l3: number;
+    l4: number;
+    l5: number;
+  };
+  nurseWeights: {
+    l1: number;
+    l2: number;
+    l3: number;
+    l4: number;
+    l5: number;
+  };
+  residentDoctorFactor: number;
+  finalWeights: {
+    pbrWeight: number;
+    nbrWeight: number;
+    waitingAdmissionWeight: number;
+    over24HourWeight: number;
+  };
+  thresholds: {
+    normal: number;
+    warning: number;
+  };
 }
 
 export interface NotificationSettings {
-  enableEmail: boolean;
-  enableSMS: boolean;
-  emailAddress: string;
-  phoneNumber: string;
-  normalThreshold: number;
-  warningThreshold: number;
-  criticalThreshold: number;
-  // 三竹資訊簡訊設定
-  mitake: {
+  email: {
+    enabled: boolean;
+    smtpServer: string;
+    port: number;
     username: string;
     password: string;
-    apiUrl: string;
+    recipients: string[];
   };
+  sms: {
+    enabled: boolean;
+    mitakeUsername: string;
+    mitakePassword: string;
+    mitakeApiUrl: string;
+    recipients: string[];
+  };
+  thresholds: {
+    warning: number;
+    critical: number;
+  };
+  notificationInterval: number;
 }
 
 export interface APISettings {
@@ -37,7 +61,8 @@ export interface APISettings {
 export interface UserRole {
   id: string;
   name: string;
-  permissions: Permission[];
+  description: string;
+  permissions: string[];
 }
 
 export interface Permission {
@@ -51,10 +76,10 @@ export interface User {
   id: string;
   username: string;
   email: string;
-  role: UserRole;
+  role: string;
   isActive: boolean;
-  lastLogin?: Date;
-  createdAt: Date;
+  lastLogin: string | null;
+  createdAt: string;
 }
 
 export interface WeightLimits {
@@ -63,7 +88,7 @@ export interface WeightLimits {
 }
 
 export interface SettingsState {
-  edci: EDCISettings;
+  edciCalculation: EDCICalculationSettings;
   notifications: NotificationSettings;
   api: APISettings;
   users: User[];

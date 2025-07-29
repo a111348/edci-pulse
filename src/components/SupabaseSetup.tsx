@@ -18,7 +18,7 @@ export function SupabaseSetup() {
           API 代理設定
         </CardTitle>
         <CardDescription>
-          使用 Supabase Edge Function 作為 API 代理，讓外部用戶只需要連接 80 port
+          使用本機 Supabase Edge Function 作為 API 代理，內網部署更安全
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -38,12 +38,15 @@ export function SupabaseSetup() {
         )}
         
         <div className="space-y-2">
-          <h4 className="font-medium">設定步驟：</h4>
+          <h4 className="font-medium">本機 Supabase 設定步驟：</h4>
           <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
-            <li>在 Supabase 控制台創建新項目</li>
-            <li>在 Edge Functions 中創建 "hospital-data-proxy" 函數</li>
-            <li>部署 Edge Function</li>
-            <li>在 Lovable 項目設定中添加環境變數</li>
+            <li>在內網伺服器安裝 Supabase</li>
+            <li>創建 "hospital-data-proxy" Edge Function</li>
+            <li>設定 Lovable 環境變數:</li>
+            <ul className="list-disc list-inside ml-4 mt-1">
+              <li>VITE_SUPABASE_URL: http://您的內網IP:54321</li>
+              <li>VITE_SUPABASE_ANON_KEY: 您的 anon key</li>
+            </ul>
           </ol>
         </div>
         
@@ -63,12 +66,13 @@ export function SupabaseSetup() {
         </div>
         
         <div className="text-xs text-muted-foreground">
-          <p><strong>優點：</strong></p>
+          <p><strong>本機部署優點：</strong></p>
           <ul className="list-disc list-inside space-y-1">
-            <li>外部用戶只需要訪問 80 port</li>
-            <li>API 憑證安全存儲在後端</li>
+            <li>外部用戶只需要連接 80 port</li>
+            <li>API 憑證安全存儲在內網</li>
+            <li>完全控制數據流向</li>
             <li>支援 CORS 和請求代理</li>
-            <li>自動處理錯誤和重試</li>
+            <li>減少外部依賴</li>
           </ul>
         </div>
       </CardContent>
