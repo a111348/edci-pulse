@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { HospitalData } from '@/types/hospital';
 import { generateMockHospitalData } from '@/data/mockData';
@@ -23,40 +24,57 @@ export function useApiData() {
     return defaultSettings.api;
   };
 
-  // 從API獲取資料
+  // 通過 Supabase Edge Function 從API獲取資料
   const fetchFromApi = async (apiSettings: APISettings): Promise<HospitalData[]> => {
-    // 自動生成今天的日期參數
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD格式
-    const urlWithDate = `${apiSettings.baseUrl}${apiSettings.endpoint}${apiSettings.endpoint.includes('?') ? '&' : '?'}StartDate=${today}`;
-    const url = urlWithDate;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-
-    if (apiSettings.apiKey) {
-      headers['Authorization'] = `Bearer ${apiSettings.apiKey}`;
+    // 使用 Supabase Edge Function 作為 proxy
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error('Supabase 設定不完整，請檢查環境變數');
     }
+
+    const edgeFunctionUrl = `${supabaseUrl}/functions/v1/hospital-data-proxy`;
+    
+    // 自動生成今天的日期參數
+    const today = new Date().toISOString().split('T')[0];
+    
+    const requestBody = {
+      baseUrl: apiSettings.baseUrl,
+      endpoint: apiSettings.endpoint,
+      apiKey: apiSettings.apiKey,
+      startDate: today,
+      timeout: apiSettings.timeout
+    };
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), apiSettings.timeout * 1000);
 
     try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers,
+      const response = await fetch(edgeFunctionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+        },
+        body: JSON.stringify(requestBody),
         signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+        throw new Error(`代理服務器請求失敗: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
       
+      // 處理回應資料
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
       // 將API回應轉換為系統格式
-      // 處理新的API格式：包含headData和bodyDetails
       if (data.bodyDetails && Array.isArray(data.bodyDetails)) {
         return data.bodyDetails.map((item: any) => ({
           id: Math.random(),
@@ -71,15 +89,18 @@ export function useApiData() {
           patientLvl5: item.patienT_LVL5 || 0,
           attphysicianNum: item.attphysiciaN_NUM || 0,
           resiphysicianNum: item.resiphysiciaN_NUM || 0,
+          nurseNum: item.nursE_NUM || 0,
+          waitingAdmissionNum: item.waitinG_ADMISSION_NUM || 0,
+          over24HourNum: item.oveR_24HOUR_NUM || 0,
           edci: item.edci || 0,
           edciStatus: item.edciStatus?.toLowerCase() === 'normal' ? 'normal' : 
                      item.edciStatus?.toLowerCase() === 'warning' ? 'warning' : 'critical',
-          latitude: 0, // API沒有提供座標，使用預設值
+          latitude: 0,
           longitude: 0,
         }));
       }
 
-      // 兼容舊格式（如果是陣列）
+      // 兼容舊格式
       if (Array.isArray(data)) {
         return data.map((item: any) => ({
           id: item.id || Math.random(),
@@ -94,6 +115,9 @@ export function useApiData() {
           patientLvl5: item.patientLvl5 || 0,
           attphysicianNum: item.attphysicianNum || 0,
           resiphysicianNum: item.resiphysicianNum || 0,
+          nurseNum: item.nurseNum || 0,
+          waitingAdmissionNum: item.waitingAdmissionNum || 0,
+          over24HourNum: item.over24HourNum || 0,
           edci: item.edci || 0,
           edciStatus: item.edciStatus || 'normal',
           latitude: item.latitude || 0,
@@ -101,10 +125,28 @@ export function useApiData() {
         }));
       }
 
-      throw new Error('Invalid API response format');
+      throw new Error('無效的 API 回應格式');
     } catch (error: any) {
       clearTimeout(timeoutId);
       throw error;
+    }
+  };
+
+  // 測試 API 連線
+  const testApiConnection = async (apiSettings: APISettings) => {
+    try {
+      const data = await fetchFromApi(apiSettings);
+      return {
+        success: true,
+        message: `成功連接！獲取到 ${data.length} 筆醫院資料`,
+        data: data.slice(0, 3) // 回傳前3筆作為範例
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: `連接失敗: ${error.message}`,
+        data: null
+      };
     }
   };
 
@@ -117,9 +159,12 @@ export function useApiData() {
 
     const apiSettings = getApiSettings();
     
-    // 如果沒有設定API URL，使用模擬資料
-    if (!apiSettings.baseUrl || !apiSettings.endpoint) {
-      console.log('Using mock data - API not configured');
+    // 檢查是否有 Supabase 設定
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (!supabaseUrl || !supabaseAnonKey || !apiSettings.baseUrl || !apiSettings.endpoint) {
+      console.log('Using mock data - Supabase or API not configured');
       setHospitals(generateMockHospitalData());
       setLoading(false);
       return;
@@ -138,7 +183,7 @@ export function useApiData() {
         
         if (retryCount <= maxRetries) {
           console.log(`API fetch failed, retrying... (${retryCount}/${maxRetries})`);
-          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount)); // 逐步延遲
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
           return tryFetch();
         }
 
@@ -159,5 +204,6 @@ export function useApiData() {
     error,
     fetchHospitalData,
     refetch: () => fetchHospitalData(true),
+    testApiConnection,
   };
 }
