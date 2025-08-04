@@ -8,10 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Users, UserPlus, Edit, Trash2, Save } from 'lucide-react';
+import { Users, UserPlus, Edit, Trash2, Save, Building2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { User, UserRole } from '@/types/settings';
 import { defaultSettings, SETTINGS_STORAGE_KEY } from '@/data/settings';
+import { HOSPITALS } from '@/data/hospitals';
 
 export function UserManagementTab() {
   const [users, setUsers] = useState<User[]>(defaultSettings.users);
@@ -64,6 +65,7 @@ export function UserManagementTab() {
       isActive: true,
       lastLogin: null,
       createdAt: new Date().toISOString(),
+      allowedHospitals: userData.allowedHospitals || [],
     };
     setUsers(prev => [...prev, newUser]);
     setShowAddDialog(false);
@@ -148,6 +150,7 @@ export function UserManagementTab() {
                 <TableHead>使用者名稱</TableHead>
                 <TableHead>電子郵件</TableHead>
                 <TableHead>角色</TableHead>
+                <TableHead>可查看醫院</TableHead>
                 <TableHead>狀態</TableHead>
                 <TableHead>最後登入</TableHead>
                 <TableHead>操作</TableHead>
@@ -162,6 +165,24 @@ export function UserManagementTab() {
                 <Badge variant={getRoleColor(user.role)}>
                   {roles.find(r => r.id === user.role)?.name || user.role}
                 </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1 max-w-xs">
+                      {user.allowedHospitals.length === 0 ? (
+                        <Badge variant="outline" className="text-xs">無醫院權限</Badge>
+                      ) : user.allowedHospitals.length === HOSPITALS.length ? (
+                        <Badge variant="secondary" className="text-xs">全部醫院</Badge>
+                      ) : (
+                        user.allowedHospitals.slice(0, 3).map(code => (
+                          <Badge key={code} variant="outline" className="text-xs">
+                            {HOSPITALS.find(h => h.code === code)?.name.slice(0, 4) || code}
+                          </Badge>
+                        ))
+                      )}
+                      {user.allowedHospitals.length > 3 && user.allowedHospitals.length < HOSPITALS.length && (
+                        <Badge variant="outline" className="text-xs">+{user.allowedHospitals.length - 3}</Badge>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Switch
@@ -264,6 +285,7 @@ function UserForm({ user, onSubmit, onCancel, roles }: UserFormProps) {
     username: user?.username || '',
     email: user?.email || '',
     role: user?.role || 'viewer',
+    allowedHospitals: user?.allowedHospitals || [],
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -298,7 +320,22 @@ function UserForm({ user, onSubmit, onCancel, roles }: UserFormProps) {
         <Label htmlFor="role">角色</Label>
         <Select 
           value={formData.role} 
-          onValueChange={(value) => setFormData(prev => ({ ...prev, role: value }))}
+          onValueChange={(value) => {
+            const newRole = roles.find(r => r.id === value);
+            let newHospitals = formData.allowedHospitals;
+            
+            if (newRole?.defaultHospitalAccess === 'all') {
+              newHospitals = HOSPITALS.map(h => h.code);
+            } else if (newRole?.defaultHospitalAccess === 'none') {
+              newHospitals = [];
+            }
+            
+            setFormData(prev => ({ 
+              ...prev, 
+              role: value,
+              allowedHospitals: newHospitals
+            }));
+          }}
         >
           <SelectTrigger>
             <SelectValue />
@@ -311,6 +348,62 @@ function UserForm({ user, onSubmit, onCancel, roles }: UserFormProps) {
             ))}
           </SelectContent>
         </Select>
+      </div>
+      
+      <div className="space-y-2">
+        <Label>可查看醫院</Label>
+        <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border rounded">
+          {HOSPITALS.map((hospital) => (
+            <div key={hospital.code} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id={hospital.code}
+                checked={formData.allowedHospitals.includes(hospital.code)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setFormData(prev => ({
+                      ...prev,
+                      allowedHospitals: [...prev.allowedHospitals, hospital.code]
+                    }));
+                  } else {
+                    setFormData(prev => ({
+                      ...prev,
+                      allowedHospitals: prev.allowedHospitals.filter(code => code !== hospital.code)
+                    }));
+                  }
+                }}
+                className="rounded border-gray-300"
+              />
+              <Label htmlFor={hospital.code} className="text-sm">
+                {hospital.name}
+              </Label>
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-2 mt-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setFormData(prev => ({
+              ...prev,
+              allowedHospitals: HOSPITALS.map(h => h.code)
+            }))}
+          >
+            全選
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setFormData(prev => ({
+              ...prev,
+              allowedHospitals: []
+            }))}
+          >
+            清除
+          </Button>
+        </div>
       </div>
       
       <div className="flex justify-end gap-2">

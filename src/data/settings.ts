@@ -25,18 +25,21 @@ export const defaultRoles: UserRole[] = [
     name: '觀看者',
     description: '只能查看系統資料',
     permissions: defaultPermissions.filter(p => p.category === 'view').map(p => p.id),
+    defaultHospitalAccess: 'custom',
   },
   {
     id: 'operator',
     name: '操作員',
     description: '可以查看和編輯系統資料',
     permissions: defaultPermissions.filter(p => ['view', 'edit'].includes(p.category)).map(p => p.id),
+    defaultHospitalAccess: 'all',
   },
   {
     id: 'admin',
     name: '管理員',
     description: '擁有所有系統權限',
     permissions: defaultPermissions.map(p => p.id),
+    defaultHospitalAccess: 'all',
   },
 ];
 
@@ -50,6 +53,7 @@ export const defaultUsers: User[] = [
     isActive: true,
     lastLogin: new Date().toISOString(),
     createdAt: new Date('2024-01-01').toISOString(),
+    allowedHospitals: ['H001', 'H002', 'H003', 'H004', 'H005', 'H006', 'H007', 'H008', 'H009', 'H010', 'H011'],
   },
   {
     id: '2',
@@ -59,6 +63,7 @@ export const defaultUsers: User[] = [
     isActive: true,
     lastLogin: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     createdAt: new Date('2024-01-15').toISOString(),
+    allowedHospitals: ['H001', 'H002', 'H003', 'H004', 'H005', 'H006', 'H007', 'H008', 'H009', 'H010', 'H011'],
   },
   {
     id: '3',
@@ -68,6 +73,7 @@ export const defaultUsers: User[] = [
     isActive: true,
     lastLogin: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     createdAt: new Date('2024-02-01').toISOString(),
+    allowedHospitals: ['H001', 'H002', 'H003'],
   },
 ];
 

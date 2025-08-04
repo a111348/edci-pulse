@@ -63,6 +63,7 @@ export interface UserRole {
   name: string;
   description: string;
   permissions: string[];
+  defaultHospitalAccess: 'all' | 'none' | 'custom'; // 預設醫院存取權限
 }
 
 export interface Permission {
@@ -80,6 +81,7 @@ export interface User {
   isActive: boolean;
   lastLogin: string | null;
   createdAt: string;
+  allowedHospitals: string[]; // 允許查看的醫院代碼列表
 }
 
 export interface WeightLimits {

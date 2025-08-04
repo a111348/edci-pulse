@@ -50,11 +50,24 @@ All colors MUST be HSL.
     --medical-secondary: 214 32% 91%;
     --medical-accent: 200 100% 45%;
     
+    /* Large Screen Dashboard Colors - Eye-friendly */
+    --dashboard-bg: 216 32% 98%;
+    --dashboard-card: 0 0% 100%;
+    --dashboard-text-primary: 220 13% 15%;
+    --dashboard-text-secondary: 220 13% 45%;
+    --dashboard-accent: 210 70% 42%;
+    
     /* Gradients */
     --gradient-medical: linear-gradient(135deg, hsl(210 70% 42%), hsl(200 100% 45%));
     --gradient-status-normal: linear-gradient(135deg, hsl(142 71% 45%), hsl(142 71% 35%));
     --gradient-status-warning: linear-gradient(135deg, hsl(45 93% 47%), hsl(45 93% 37%));
     --gradient-status-critical: linear-gradient(135deg, hsl(0 84% 60%), hsl(0 84% 50%));
+    --gradient-dashboard-header: linear-gradient(135deg, hsl(210 70% 42%), hsl(210 70% 52%));
+    
+    /* Shadows for depth */
+    --shadow-card: 0 2px 8px -2px hsl(220 13% 18% / 0.08);
+    --shadow-card-hover: 0 4px 16px -4px hsl(220 13% 18% / 0.12);
+    --shadow-header: 0 2px 16px -4px hsl(220 13% 18% / 0.1);
 
     --radius: 0.5rem;
 
@@ -103,6 +116,18 @@ All colors MUST be HSL.
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+    
+    /* Dark mode dashboard colors */
+    --dashboard-bg: 222.2 84% 5.9%;
+    --dashboard-card: 222.2 84% 7.9%;
+    --dashboard-text-primary: 210 40% 98%;
+    --dashboard-text-secondary: 215 20.2% 65.1%;
+    --dashboard-accent: 210 70% 52%;
+    
+    --shadow-card: 0 2px 8px -2px hsl(0 0% 0% / 0.2);
+    --shadow-card-hover: 0 4px 16px -4px hsl(0 0% 0% / 0.3);
+    --shadow-header: 0 2px 16px -4px hsl(0 0% 0% / 0.25);
+    
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -121,5 +146,51 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Large screen dashboard utilities */
+  .dashboard-bg {
+    background-color: hsl(var(--dashboard-bg));
+  }
+  
+  .dashboard-card {
+    background-color: hsl(var(--dashboard-card));
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s ease-in-out;
+  }
+  
+  .dashboard-card:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+  
+  .dashboard-header {
+    background: var(--gradient-dashboard-header);
+    box-shadow: var(--shadow-header);
+  }
+  
+  .dashboard-text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    font-weight: 500;
+    color: hsl(var(--dashboard-text-primary));
+  }
+  
+  .dashboard-text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: hsl(var(--dashboard-text-secondary));
+  }
+  
+  /* Large screen responsive grid */
+  @media (min-width: 1536px) {
+    .dashboard-grid-xl {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  
+  @media (min-width: 1920px) {
+    .dashboard-grid-2xl {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
   }
 }
