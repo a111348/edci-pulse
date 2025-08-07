@@ -8,84 +8,82 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 214 32% 97%;
-    --foreground: 220 13% 18%;
+    /* 指揮中心深色主題 - 基礎色調 */
+    --background: 222 47% 11%;  /* #0F172A Slate-900 深邃海軍藍 */
+    --foreground: 210 40% 98%;  /* #F8FAFC Slate-50 柔和白色 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 13% 18%;
+    --card: 215 28% 17%;        /* #1E293B Slate-800 容器背景 */
+    --card-foreground: 210 40% 98%;  /* #F8FAFC */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 18%;
+    --popover: 215 28% 17%;     /* #1E293B */
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 210 70% 42%;
-    --primary-foreground: 0 0% 100%;
+    /* 互動元素 - 明亮藍色系 */
+    --primary: 213 94% 68%;     /* #3B82F6 Blue-500 主要按鈕 */
+    --primary-foreground: 222 47% 11%;  /* 深色文字在藍色按鈕上 */
 
-    --secondary: 214 32% 91%;
-    --secondary-foreground: 220 13% 18%;
+    --secondary: 215 25% 27%;   /* #334155 Slate-700 次要元素 */
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 214 32% 91%;
-    --muted-foreground: 220 13% 45%;
+    --muted: 215 25% 27%;       /* #334155 */
+    --muted-foreground: 215 16% 47%;  /* #64748B Slate-500 */
 
-    --accent: 214 32% 91%;
-    --accent-foreground: 220 13% 18%;
+    --accent: 213 94% 68%;      /* #3B82F6 強調色 */
+    --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;   /* #EF4444 Red-500 嚴重狀態 */
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 214 32% 88%;
-    --input: 214 32% 88%;
-    --ring: 210 70% 42%;
+    --border: 215 25% 27%;      /* #334155 邊框 */
+    --input: 215 25% 27%;       /* #334155 輸入框 */
+    --ring: 213 94% 68%;        /* #3B82F6 聚焦環 */
 
-    /* EDCI Status Colors */
-    --status-normal: 142 71% 45%;
-    --status-normal-foreground: 0 0% 100%;
-    --status-warning: 45 93% 47%;
-    --status-warning-foreground: 220 13% 18%;
-    --status-critical: 0 84% 60%;
-    --status-critical-foreground: 0 0% 100%;
+    /* EDCI 狀態顏色 - 鮮明但護眼 */
+    --status-normal: 142 71% 45%;    /* #22C55E Green-500 正常 */
+    --status-normal-foreground: 210 40% 98%;
+    --status-warning: 43 96% 56%;    /* #F59E0B Amber-500 預警 */
+    --status-warning-foreground: 222 47% 11%;  /* 深色文字在黃色上 */
+    --status-critical: 0 84% 60%;    /* #EF4444 Red-500 嚴重 */
+    --status-critical-foreground: 210 40% 98%;
 
-    /* Medical Dashboard Colors */
-    --medical-primary: 210 70% 42%;
-    --medical-primary-foreground: 0 0% 100%;
-    --medical-secondary: 214 32% 91%;
-    --medical-accent: 200 100% 45%;
+    /* 指揮中心專用顏色 */
+    --command-center-bg: 222 47% 11%;        /* #0F172A 主背景 */
+    --command-center-card: 215 28% 17%;      /* #1E293B 卡片背景 */
+    --command-center-elevated: 215 25% 27%;  /* #334155 懸浮元素 */
     
-    /* Large Screen Dashboard Colors - Eye-friendly */
-    --dashboard-bg: 216 32% 98%;
-    --dashboard-card: 0 0% 100%;
-    --dashboard-text-primary: 220 13% 15%;
-    --dashboard-text-secondary: 220 13% 45%;
-    --dashboard-accent: 210 70% 42%;
+    /* 文字層級 */
+    --text-primary: 210 40% 98%;        /* #F8FAFC 主要文字 */
+    --text-secondary: 215 20% 65%;      /* #94A3B8 Slate-400 次要文字 */
+    --text-disabled: 215 14% 34%;       /* #475569 Slate-600 禁用文字 */
     
-    /* Gradients */
-    --gradient-medical: linear-gradient(135deg, hsl(210 70% 42%), hsl(200 100% 45%));
-    --gradient-status-normal: linear-gradient(135deg, hsl(142 71% 45%), hsl(142 71% 35%));
-    --gradient-status-warning: linear-gradient(135deg, hsl(45 93% 47%), hsl(45 93% 37%));
-    --gradient-status-critical: linear-gradient(135deg, hsl(0 84% 60%), hsl(0 84% 50%));
-    --gradient-dashboard-header: linear-gradient(135deg, hsl(210 70% 42%), hsl(210 70% 52%));
+    /* 資訊與數據顏色 */
+    --info-primary: 213 94% 68%;        /* #3B82F6 Blue-500 資訊色 */
+    --info-secondary: 199 89% 48%;      /* #0EA5E9 Sky-500 次要資訊 */
     
-    /* Shadows for depth */
-    --shadow-card: 0 2px 8px -2px hsl(220 13% 18% / 0.08);
-    --shadow-card-hover: 0 4px 16px -4px hsl(220 13% 18% / 0.12);
-    --shadow-header: 0 2px 16px -4px hsl(220 13% 18% / 0.1);
+    /* 漸變效果 */
+    --gradient-command: linear-gradient(135deg, hsl(222 47% 11%), hsl(215 28% 17%));
+    --gradient-card: linear-gradient(135deg, hsl(215 28% 17%), hsl(215 25% 27%));
+    --gradient-status-normal: linear-gradient(135deg, hsl(142 71% 45%), hsl(142 71% 55%));
+    --gradient-status-warning: linear-gradient(135deg, hsl(43 96% 56%), hsl(43 96% 66%));
+    --gradient-status-critical: linear-gradient(135deg, hsl(0 84% 60%), hsl(0 84% 70%));
+    --gradient-primary: linear-gradient(135deg, hsl(213 94% 68%), hsl(213 94% 78%));
+    
+    /* 陰影系統 - 深色主題優化 */
+    --shadow-card: 0 4px 12px -2px hsl(222 47% 4% / 0.4);
+    --shadow-card-hover: 0 8px 24px -4px hsl(222 47% 4% / 0.6);
+    --shadow-elevated: 0 12px 32px -8px hsl(222 47% 4% / 0.8);
+    --shadow-focus: 0 0 0 3px hsl(213 94% 68% / 0.3);
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;  /* 增大圓角提升現代感 */
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 215 28% 17%;   /* #1E293B */
+    --sidebar-foreground: 210 40% 98%;   /* #F8FAFC */
+    --sidebar-primary: 213 94% 68%;      /* #3B82F6 */
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 215 25% 27%;       /* #334155 */
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 215 25% 27%;       /* #334155 */
+    --sidebar-ring: 213 94% 68%;         /* #3B82F6 */
   }
 
   .dark {
@@ -145,119 +143,242 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-command-center-bg text-text-primary font-sans;
   }
   
-  /* 強制深色主題，適合大螢幕顯示 */
-  .dark-theme-forced {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --primary: 210 70% 52%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    
-    /* 大螢幕優化顏色 */
-    --dashboard-bg: 220 32% 8%;
-    --dashboard-card: 220 32% 12%;
-    --dashboard-text-primary: 210 40% 98%;
-    --dashboard-text-secondary: 215 20.2% 75%;
-    --dashboard-accent: 210 70% 55%;
+  /* 指揮中心專用樣式類別 */
+  .command-center-theme {
+    background: hsl(var(--command-center-bg));
+    color: hsl(var(--text-primary));
+    font-family: 'Inter', 'Noto Sans', system-ui, -apple-system, sans-serif;
   }
   
-  /* 大螢幕深色主題樣式 */
-  .large-screen-dark {
-    background-color: hsl(var(--dashboard-bg));
-    color: hsl(var(--dashboard-text-primary));
+  .command-card {
+    background: var(--gradient-card);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-card);
+    border-radius: var(--radius);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  .large-screen-dark .dashboard-card {
-    background-color: hsl(var(--dashboard-card));
-    border: 1px solid hsl(217.2 32.6% 25%);
-    box-shadow: 0 4px 12px -2px hsl(0 0% 0% / 0.3);
-    transition: all 0.2s ease-in-out;
+  .command-card:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+    border-color: hsl(var(--accent) / 0.3);
   }
   
-  .large-screen-dark .dashboard-card:hover {
-    box-shadow: 0 8px 24px -4px hsl(0 0% 0% / 0.4);
-    transform: translateY(-1px);
+  .command-card-elevated {
+    background: hsl(var(--command-center-elevated));
+    box-shadow: var(--shadow-elevated);
   }
   
-  .large-screen-dark .dashboard-text-xl {
+  /* 文字層級系統 */
+  .text-command-xl {
+    font-size: 2rem;
+    line-height: 2.5rem;
+    font-weight: 700;
+    color: hsl(var(--text-primary));
+    letter-spacing: -0.025em;
+  }
+  
+  .text-command-lg {
     font-size: 1.5rem;
     line-height: 2rem;
     font-weight: 600;
-    color: hsl(var(--dashboard-text-primary));
+    color: hsl(var(--text-primary));
   }
   
-  .large-screen-dark .dashboard-text-lg {
+  .text-command-md {
     font-size: 1.25rem;
     line-height: 1.75rem;
     font-weight: 500;
-    color: hsl(var(--dashboard-text-primary));
+    color: hsl(var(--text-primary));
   }
   
-  .large-screen-dark .dashboard-text-md {
+  .text-command-base {
     font-size: 1.125rem;
-    line-height: 1.5rem;
-    font-weight: 500;
-    color: hsl(var(--dashboard-text-secondary));
+    line-height: 1.75rem;
+    font-weight: 400;
+    color: hsl(var(--text-secondary));
   }
   
-  .large-screen-dark .dashboard-text-sm {
+  .text-command-sm {
     font-size: 1rem;
     line-height: 1.5rem;
-    color: hsl(var(--dashboard-text-secondary));
+    color: hsl(var(--text-secondary));
   }
   
-  /* 狀態指示器優化 */
-  .large-screen-dark .status-normal {
-    background: linear-gradient(135deg, hsl(142 71% 45%), hsl(142 71% 55%));
-    color: white;
-    text-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
+  .text-command-xs {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: hsl(var(--text-disabled));
   }
   
-  .large-screen-dark .status-warning {
-    background: linear-gradient(135deg, hsl(45 93% 47%), hsl(45 93% 57%));
-    color: hsl(220 13% 18%);
-    text-shadow: 0 1px 2px hsl(0 0% 100% / 0.3);
-  }
-  
-  .large-screen-dark .status-critical {
-    background: linear-gradient(135deg, hsl(0 84% 60%), hsl(0 84% 70%));
-    color: white;
-    text-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
-  }
-  
-  /* 按鈕和交互元素 */
-  .large-screen-dark .btn-large {
-    padding: 0.75rem 1.5rem;
-    font-size: 1.125rem;
+  /* 狀態指示器 */
+  .status-badge {
+    padding: 0.5rem 1rem;
     border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    text-align: center;
+    box-shadow: var(--shadow-card);
     transition: all 0.2s ease-in-out;
   }
   
-  .large-screen-dark .btn-large:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px -2px hsl(var(--primary) / 0.3);
+  .status-normal {
+    background: var(--gradient-status-normal);
+    color: hsl(var(--status-normal-foreground));
+    text-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
   }
   
-  /* Large screen responsive grid */
-  @media (min-width: 1536px) {
-    .dashboard-grid-xl {
+  .status-warning {
+    background: var(--gradient-status-warning);
+    color: hsl(var(--status-warning-foreground));
+    text-shadow: 0 1px 2px hsl(0 0% 0% / 0.2);
+  }
+  
+  .status-critical {
+    background: var(--gradient-status-critical);
+    color: hsl(var(--status-critical-foreground));
+    text-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
+  }
+  
+  /* 互動按鈕 */
+  .command-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    border-radius: var(--radius);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    border: none;
+    outline: none;
+  }
+  
+  .command-btn:focus-visible {
+    box-shadow: var(--shadow-focus);
+  }
+  
+  .command-btn-primary {
+    background: var(--gradient-primary);
+    color: hsl(var(--primary-foreground));
+    box-shadow: var(--shadow-card);
+  }
+  
+  .command-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-card-hover);
+  }
+  
+  .command-btn-secondary {
+    background: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    border: 1px solid hsl(var(--border));
+  }
+  
+  .command-btn-secondary:hover {
+    background: hsl(var(--command-center-elevated));
+    border-color: hsl(var(--accent) / 0.5);
+  }
+  
+  /* 數據顯示 */
+  .data-metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem;
+  }
+  
+  .data-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+    color: hsl(var(--text-primary));
+  }
+  
+  .data-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: hsl(var(--text-secondary));
+    text-align: center;
+  }
+  
+  /* 響應式格線系統 */
+  .command-grid {
+    display: grid;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+  
+  .command-grid-sm {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  
+  .command-grid-md {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+  
+  .command-grid-lg {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+  
+  /* 大螢幕優化 */
+  @media (min-width: 1280px) {
+    .command-grid-xl {
       grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+    
+    .text-command-xl {
+      font-size: 2.5rem;
+      line-height: 3rem;
+    }
+    
+    .data-value {
+      font-size: 3rem;
+    }
+    
+    .command-btn {
+      padding: 1rem 2rem;
+      font-size: 1.25rem;
+    }
+  }
+  
+  @media (min-width: 1536px) {
+    .command-grid-2xl {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 2.5rem;
+      padding: 2.5rem;
     }
   }
   
   @media (min-width: 1920px) {
-    .dashboard-grid-2xl {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+    .command-grid-3xl {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 3rem;
+      padding: 3rem;
     }
+    
+    .text-command-xl {
+      font-size: 3rem;
+      line-height: 3.5rem;
+    }
+    
+    .data-value {
+      font-size: 4rem;
+    }
+  }
+  
+  /* 平滑滾動 */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* 選取樣式 */
+  ::selection {
+    background: hsl(var(--primary) / 0.3);
+    color: hsl(var(--text-primary));
   }
 }

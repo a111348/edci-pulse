@@ -10,11 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Settings, Bell, Activity, Wifi, WifiOff } from 'lucide-react';
+import { RefreshCw, Settings, Bell, Activity, Wifi, WifiOff, Shield, Users, Building2 } from 'lucide-react';
 import { useApiData } from '@/hooks/useApiData';
 import { useToast } from '@/hooks/use-toast';
 import { useHospitalFilter } from '@/hooks/useHospitalFilter';
 import { useAuth } from '@/hooks/useAuth';
+import { format } from 'date-fns';
 
 const Index = () => {
   const [selectedHospital, setSelectedHospital] = useState<HospitalData | undefined>();
@@ -53,191 +54,199 @@ const Index = () => {
   const handleRefresh = () => {
     refetch();
     setLastUpdated(new Date());
+    toast({
+      title: '資料更新中',
+      description: '正在重新載入最新的醫院資料...',
+    });
   };
 
+  // 獲取連線狀態
+  const connectionStatus = error ? 'error' : loading ? 'connecting' : 'connected';
+
   return (
-    <div className="min-h-screen dashboard-bg">
-      {/* Header */}
-      <header className="dashboard-header text-white">
-        <div className="container mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
-                <Activity className="w-10 h-10 text-white" />
+    <div className="min-h-screen command-center-theme">
+      <div className="flex h-screen">
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <header className="command-card-elevated px-8 py-6 flex items-center justify-between border-b border-border shadow-header">
+            <div className="flex items-center gap-6">
+              <div className="p-4 bg-primary/20 rounded-2xl backdrop-blur-sm border border-primary/30">
+                <Activity className="w-12 h-12 text-primary" />
               </div>
               <div>
-                <h1 className="text-3xl xl:text-4xl font-bold text-white">
-                  急診壅塞指數儀表板
-                </h1>
-                <p className="text-lg xl:text-xl text-white/90 mt-1">
-                  桃園市責任醫院 EDCI 監控系統
-                </p>
+                <h1 className="text-command-xl text-primary">醫院急診擁擠指數監控中心</h1>
+                <div className="flex items-center gap-4 text-command-base mt-2">
+                  <div className={`w-3 h-3 rounded-full ${
+                    connectionStatus === 'connected' ? 'bg-status-normal shadow-lg shadow-green-500/30' : 
+                    connectionStatus === 'connecting' ? 'bg-status-warning shadow-lg shadow-yellow-500/30 animate-pulse' : 
+                    'bg-status-critical shadow-lg shadow-red-500/30'
+                  }`}></div>
+                  <span className="font-medium text-text-primary">
+                    {connectionStatus === 'connected' ? '系統正常運行' : 
+                     connectionStatus === 'connecting' ? '正在連線中...' : '連線異常'}
+                  </span>
+                  {lastUpdated && (
+                    <>
+                      <span className="mx-3 text-text-disabled">•</span>
+                      <span className="text-text-secondary">
+                        最後更新: {format(lastUpdated, 'HH:mm:ss')}
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
             
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3 px-4 py-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                {error ? (
-                  <WifiOff className="w-5 h-5 text-red-300" />
-                ) : (
-                  <Wifi className="w-5 h-5 text-green-300" />
-                )}
-                <Badge variant="outline" className="text-sm bg-white/20 text-white border-white/30">
-                  最後更新：{lastUpdated.toLocaleTimeString('zh-TW')}
-                </Badge>
-              </div>
-              
-              <Button 
-                variant="outline" 
-                size="lg"
-                onClick={handleRefresh}
+              <button 
+                onClick={handleRefresh} 
                 disabled={loading}
-                className="bg-white/20 text-white border-white/30 hover:bg-white/30 px-6 py-3"
+                className={`command-btn command-btn-secondary gap-3 ${loading ? 'opacity-50' : ''}`}
               >
-                <RefreshCw className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                更新資料
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="bg-white/20 text-white border-white/30 hover:bg-white/30 px-6 py-3"
-              >
-                <Bell className="w-5 h-5 mr-2" />
+                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                重新整理
+              </button>
+              <button className="command-btn command-btn-secondary gap-3">
+                <Bell className="w-5 h-5" />
                 通知設定
-              </Button>
-              
+              </button>
               <SettingsDialog />
             </div>
-          </div>
-        </div>
-      </header>
+          </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        {/* Status Overview */}
-        <div className="mb-8">
-          <StatusOverview hospitals={filteredHospitals} />
-        </div>
-
-        {/* User Info */}
-        <div className="mb-6 p-4 bg-white/80 rounded-lg shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="text-sm text-muted-foreground">
-                目前使用者：<span className="font-medium text-foreground">{currentUser?.username}</span>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                權限等級：<span className="font-medium text-foreground">{currentUser?.role}</span>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                可查看醫院：<span className="font-medium text-foreground">{filteredHospitals.length} 家</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Tabs for different views */}
-        <Tabs defaultValue="overview" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4 h-14 p-1 bg-white/90 shadow-lg">
-            <TabsTrigger value="overview" className="text-lg font-medium h-12">總覽</TabsTrigger>
-            <TabsTrigger value="map" className="text-lg font-medium h-12">地圖</TabsTrigger>
-            <TabsTrigger value="trends" className="text-lg font-medium h-12">趨勢</TabsTrigger>
-            <TabsTrigger value="export" className="text-lg font-medium h-12">匯出</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-              {filteredHospitals.map((hospital) => (
-                <HospitalCard
-                  key={hospital.id}
-                  hospital={hospital}
-                  onClick={() => setSelectedHospital(hospital)}
-                />
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="map" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <HospitalMap
-                hospitals={filteredHospitals}
-                selectedHospital={selectedHospital}
-                onHospitalSelect={setSelectedHospital}
-              />
-              
-              {selectedHospital && (
-                <div className="space-y-4">
-                  <HospitalCard hospital={selectedHospital} />
-                  <Card className="p-4">
-                    <h3 className="font-semibold mb-2">詳細資訊</h3>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">醫院代碼：</span>
-                        <span className="font-medium">{selectedHospital.hospitalCode}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">病人總數：</span>
-                        <span className="font-medium">{selectedHospital.patientTn}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">L1 病人：</span>
-                        <span className="font-medium">{selectedHospital.patientLvl1}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">L2 病人：</span>
-                        <span className="font-medium">{selectedHospital.patientLvl2}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">L3 病人：</span>
-                        <span className="font-medium">{selectedHospital.patientLvl3}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">L4 病人：</span>
-                        <span className="font-medium">{selectedHospital.patientLvl4}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">L5 病人：</span>
-                        <span className="font-medium">{selectedHospital.patientLvl5}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">主治醫師：</span>
-                        <span className="font-medium">{selectedHospital.attphysicianNum}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">住院醫師：</span>
-                        <span className="font-medium">{selectedHospital.resiphysicianNum}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">EDCI 指數：</span>
-                        <span className="font-bold text-primary">{selectedHospital.edci}</span>
-                      </div>
-                    </div>
-                  </Card>
+          {/* User Info */}
+          {currentUser && (
+            <div className="command-card px-8 py-4 border-b border-border">
+              <div className="text-command-base flex items-center gap-8">
+                <div className="flex items-center gap-3">
+                  <Shield className="w-5 h-5 text-info-primary" />
+                  <span className="text-text-secondary">操作員:</span>
+                  <span className="text-primary font-semibold">{currentUser.username}</span>
                 </div>
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="trends" className="space-y-6">
-            <TrendsView 
-              hospitals={filteredHospitals}
-              selectedHospital={selectedHospital}
-              onHospitalSelect={setSelectedHospital}
-            />
-          </TabsContent>
-
-          <TabsContent value="export" className="space-y-6">
-            {hasPermission('export_data') ? (
-              <DataExport hospitals={filteredHospitals} />
-            ) : (
-              <div className="text-center py-12 text-muted-foreground">
-                您沒有權限匯出資料
+                <div className="flex items-center gap-3">
+                  <Users className="w-5 h-5 text-info-secondary" />
+                  <span className="text-text-secondary">權限等級:</span>
+                  <span className={`font-semibold px-3 py-1 rounded-lg ${
+                    currentUser.role === 'admin' ? 'bg-status-critical/20 text-status-critical' :
+                    currentUser.role === 'operator' ? 'bg-status-warning/20 text-status-warning' : 
+                    'bg-status-normal/20 text-status-normal'
+                  }`}>
+                    {currentUser.role === 'admin' ? '系統管理員' : 
+                     currentUser.role === 'operator' ? '操作人員' : '觀察人員'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Building2 className="w-5 h-5 text-info-primary" />
+                  <span className="text-text-secondary">監控範圍:</span>
+                  <span className="text-info-primary font-semibold">{filteredHospitals.length} 家醫療機構</span>
+                </div>
               </div>
-            )}
-          </TabsContent>
-        </Tabs>
-      </main>
+            </div>
+          )}
+
+          {/* Main Content */}
+          <main className="flex-1 overflow-auto">
+            <div className="command-grid command-grid-lg">
+              <StatusOverview hospitals={filteredHospitals} />
+              
+              <Tabs defaultValue="overview" className="mt-8">
+                <TabsList className="grid w-full grid-cols-4 bg-command-center-elevated p-2 rounded-xl shadow-card">
+                  <TabsTrigger 
+                    value="overview" 
+                    className="text-command-base font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-card"
+                  >
+                    總覽儀表板
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="map" 
+                    className="text-command-base font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-card"
+                  >
+                    地理位置檢視
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="trends" 
+                    className="text-command-base font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-card"
+                  >
+                    趨勢分析
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="export" 
+                    className="text-command-base font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-card"
+                  >
+                    資料匯出
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="overview" className="space-y-8 mt-8">
+                  <div className="command-grid command-grid-lg">
+                    {filteredHospitals.map((hospital) => (
+                      <HospitalCard
+                        key={hospital.hospitalCode}
+                        hospital={hospital}
+                        onClick={() => setSelectedHospital(hospital)}
+                      />
+                    ))}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="map" className="space-y-8 mt-8">
+                  <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                    <div className="xl:col-span-2">
+                      <HospitalMap
+                        hospitals={filteredHospitals}
+                        selectedHospital={selectedHospital}
+                        onHospitalSelect={setSelectedHospital}
+                      />
+                    </div>
+                    {selectedHospital && (
+                      <div className="space-y-6">
+                        <HospitalCard hospital={selectedHospital} onClick={() => setSelectedHospital(selectedHospital)} />
+                        <Card className="command-card p-6">
+                          <h3 className="text-command-lg mb-4 text-primary">詳細資訊</h3>
+                          <div className="grid grid-cols-1 gap-4">
+                            <div className="data-metric">
+                              <span className="data-label">醫院代碼</span>
+                              <span className="data-value text-command-md">{selectedHospital.hospitalCode}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="data-metric">
+                                <span className="data-label">病人總數</span>
+                                <span className="data-value text-command-lg">{selectedHospital.patientTn}</span>
+                              </div>
+                              <div className="data-metric">
+                                <span className="data-label">EDCI 指數</span>
+                                <span className="data-value text-command-lg text-primary">{selectedHospital.edci}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="trends" className="space-y-8 mt-8">
+                  <TrendsView 
+                    hospitals={filteredHospitals}
+                    selectedHospital={selectedHospital}
+                    onHospitalSelect={setSelectedHospital}
+                  />
+                </TabsContent>
+
+                <TabsContent value="export" className="space-y-8 mt-8">
+                  {hasPermission('export_data') ? (
+                    <DataExport hospitals={filteredHospitals} />
+                  ) : (
+                    <div className="command-card p-12 text-center">
+                      <div className="text-command-lg text-text-secondary">您沒有權限匯出資料</div>
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+            </div>
+          </main>
+        </div>
+      </div>
     </div>
   );
 };
