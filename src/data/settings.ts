@@ -129,8 +129,8 @@ export const defaultSettings: SettingsState = {
     notificationInterval: 30,
   },
   api: {
-    baseUrl: 'http://192.168.1.100:8080',
-    endpoint: '/api/hospital/emergency-data',
+    baseUrl: '',
+    endpoint: '',
     apiKey: '',
     timeout: 30,
     retryCount: 3,

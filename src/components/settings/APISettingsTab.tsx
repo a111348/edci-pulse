@@ -90,7 +90,7 @@ export function APISettingsTab() {
             <Label htmlFor="baseUrl">API 基礎網址</Label>
             <Input
               id="baseUrl"
-              placeholder="http://192.168.1.100:8080"
+              placeholder="例如: http://192.168.1.100:8080"
               value={settings.baseUrl}
               onChange={(e) => updateSetting('baseUrl', e.target.value)}
             />
@@ -103,7 +103,7 @@ export function APISettingsTab() {
             <Label htmlFor="endpoint">API 端點</Label>
             <Input
               id="endpoint"
-              placeholder="/api/hospital/emergency-data"
+              placeholder="例如: /api/hospital/emergency-data"
               value={settings.endpoint}
               onChange={(e) => updateSetting('endpoint', e.target.value)}
             />

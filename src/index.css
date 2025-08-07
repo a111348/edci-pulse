@@ -148,37 +148,104 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
   
-  /* Large screen dashboard utilities */
-  .dashboard-bg {
+  /* 強制深色主題，適合大螢幕顯示 */
+  .dark-theme-forced {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --primary: 210 70% 52%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    
+    /* 大螢幕優化顏色 */
+    --dashboard-bg: 220 32% 8%;
+    --dashboard-card: 220 32% 12%;
+    --dashboard-text-primary: 210 40% 98%;
+    --dashboard-text-secondary: 215 20.2% 75%;
+    --dashboard-accent: 210 70% 55%;
+  }
+  
+  /* 大螢幕深色主題樣式 */
+  .large-screen-dark {
     background-color: hsl(var(--dashboard-bg));
+    color: hsl(var(--dashboard-text-primary));
   }
   
-  .dashboard-card {
+  .large-screen-dark .dashboard-card {
     background-color: hsl(var(--dashboard-card));
-    box-shadow: var(--shadow-card);
-    transition: box-shadow 0.2s ease-in-out;
+    border: 1px solid hsl(217.2 32.6% 25%);
+    box-shadow: 0 4px 12px -2px hsl(0 0% 0% / 0.3);
+    transition: all 0.2s ease-in-out;
   }
   
-  .dashboard-card:hover {
-    box-shadow: var(--shadow-card-hover);
+  .large-screen-dark .dashboard-card:hover {
+    box-shadow: 0 8px 24px -4px hsl(0 0% 0% / 0.4);
+    transform: translateY(-1px);
   }
   
-  .dashboard-header {
-    background: var(--gradient-dashboard-header);
-    box-shadow: var(--shadow-header);
+  .large-screen-dark .dashboard-text-xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 600;
+    color: hsl(var(--dashboard-text-primary));
   }
   
-  .dashboard-text-lg {
-    font-size: 1.125rem;
+  .large-screen-dark .dashboard-text-lg {
+    font-size: 1.25rem;
     line-height: 1.75rem;
     font-weight: 500;
     color: hsl(var(--dashboard-text-primary));
   }
   
-  .dashboard-text-sm {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+  .large-screen-dark .dashboard-text-md {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+    font-weight: 500;
     color: hsl(var(--dashboard-text-secondary));
+  }
+  
+  .large-screen-dark .dashboard-text-sm {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: hsl(var(--dashboard-text-secondary));
+  }
+  
+  /* 狀態指示器優化 */
+  .large-screen-dark .status-normal {
+    background: linear-gradient(135deg, hsl(142 71% 45%), hsl(142 71% 55%));
+    color: white;
+    text-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
+  }
+  
+  .large-screen-dark .status-warning {
+    background: linear-gradient(135deg, hsl(45 93% 47%), hsl(45 93% 57%));
+    color: hsl(220 13% 18%);
+    text-shadow: 0 1px 2px hsl(0 0% 100% / 0.3);
+  }
+  
+  .large-screen-dark .status-critical {
+    background: linear-gradient(135deg, hsl(0 84% 60%), hsl(0 84% 70%));
+    color: white;
+    text-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
+  }
+  
+  /* 按鈕和交互元素 */
+  .large-screen-dark .btn-large {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .large-screen-dark .btn-large:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px -2px hsl(var(--primary) / 0.3);
   }
   
   /* Large screen responsive grid */
