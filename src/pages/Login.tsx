@@ -49,9 +49,9 @@ export default function Login() {
   };
 
   const demoUsers = [
-    { email: 'admin@hospital.com', password: 'admin', role: '系統管理員' },
-    { email: 'operator@hospital.com', password: 'operator', role: '操作員' },
-    { email: 'viewer@hospital.com', password: 'viewer', role: '檢視者' }
+    { email: 'admin@hospital.gov.tw', password: 'admin', role: '系統管理員' },
+    { email: 'operator1@hospital.gov.tw', password: 'operator1', role: '操作員' },
+    { email: 'viewer1@hospital.gov.tw', password: 'viewer1', role: '檢視者' }
   ];
 
   return (
