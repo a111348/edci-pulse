@@ -14,7 +14,8 @@ import { RefreshCw, Settings, Bell, Activity, Wifi, WifiOff, Shield, Users, Buil
 import { useApiData } from '@/hooks/useApiData';
 import { useToast } from '@/hooks/use-toast';
 import { useHospitalFilter } from '@/hooks/useHospitalFilter';
-import { useAuth } from '@/hooks/useAuth';
+import { useLocalAuth } from '@/hooks/useLocalAuth';
+import { UserMenu } from '@/components/UserMenu';
 import { format } from 'date-fns';
 
 const Index = () => {
@@ -22,7 +23,7 @@ const Index = () => {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const { hospitals, loading, error, fetchHospitalData, refetch } = useApiData();
   const { toast } = useToast();
-  const { currentUser, hasPermission } = useAuth();
+  const { currentUser, hasPermission } = useLocalAuth();
   const filteredHospitals = useHospitalFilter(hospitals);
 
   // 初始載入資料
@@ -110,7 +111,8 @@ const Index = () => {
                 <Bell className="w-5 h-5" />
                 通知設定
               </button>
-              <SettingsDialog />
+              {hasPermission('settings:manage') && <SettingsDialog />}
+              <UserMenu onSettingsClick={() => {}} />
             </div>
           </header>
 
