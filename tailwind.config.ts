@@ -69,6 +69,15 @@ export default {
 				'medical-primary': 'hsl(var(--medical-primary))',
 				'medical-secondary': 'hsl(var(--medical-secondary))',
 				'medical-accent': 'hsl(var(--medical-accent))',
+				// Command Center Theme Colors
+				'command-center-bg': 'hsl(var(--command-center-bg))',
+				'command-center-card': 'hsl(var(--command-center-card))',
+				'command-center-elevated': 'hsl(var(--command-center-elevated))',
+				'text-primary': 'hsl(var(--text-primary))',
+				'text-secondary': 'hsl(var(--text-secondary))',
+				'text-disabled': 'hsl(var(--text-disabled))',
+				'info-primary': 'hsl(var(--info-primary))',
+				'info-secondary': 'hsl(var(--info-secondary))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
